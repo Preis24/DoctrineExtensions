@@ -110,11 +110,9 @@ class LogEntryRepository extends DocumentRepository
             // Fill the embedded document
             if ($wrapped->isEmbeddedAssociation($field)) {
                 if (!empty($value)) {
-                    if(method_exists($document, $getter = 'get' . ucfirst($field))) {
-                        $document = $document->$getter();
-                        $this->fillDocument($document, $value);
-                        $value = $document;
-                    }
+                    $embeddedDoc = $objectMeta->getReflectionProperty($field)->getValue($document);
+                    $this->fillDocument($embeddedDoc, $value);
+                    $value = $embeddedDoc;
                 }
             } elseif ($objectMeta->isSingleValuedAssociation($field)) {
                 $value = $value ? $this->dm->getReference($mapping['targetDocument'], $value) : null;
